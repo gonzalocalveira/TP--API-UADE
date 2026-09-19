@@ -2,34 +2,35 @@ package com.example.GestionDeCine.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
-import java.util.*;
-
-import com.example.GestionDeCine.model.Interface.ICliente;
 
 @Entity
 @Data
 @ToString
-public class Cliente implements ICliente {
+public class Usuario{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     private boolean isSocio;
     private String nombreApellido;
     private int dni;
     private LocalDate fechaNacimiento;
     private String mail;
     private String password;
-
-    public Cliente() {
+    @Enumerated(EnumType.STRING)
+    private Rol rol;
+    @Enumerated(EnumType.STRING)
+    private Membresia membresia;
+    public Usuario() {
     }
 
-    public Cliente(String password,
+    public Usuario(String password,
                    String mail,
                    LocalDate fechaNacimiento,
                    int dni,
                    String nombreApellido,
-                   boolean isSocio) {
+                   boolean isSocio,
+                   Rol rol,
+                   Membresia membresia) {
 
         this.password = password;
         this.mail = mail;
@@ -37,24 +38,7 @@ public class Cliente implements ICliente {
         this.dni = dni;
         this.nombreApellido = nombreApellido;
         this.isSocio = isSocio;
-    }
-
-    @Override
-    public List<Entrada> verHistorial() {
-        return List.of();
-    }
-
-    @Override
-    public String verMembresia() {
-        return "";
-    }
-
-    @Override
-    public void comprarEntrada() {
-    }
-
-    @Override
-    public List<Pelicula> verCartelera() {
-        return List.of();
+        this.rol=rol;
+        this.membresia=membresia;
     }
 }

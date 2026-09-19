@@ -1,7 +1,7 @@
 package com.example.GestionDeCine.controller;
 
-import com.example.GestionDeCine.model.Cliente;
-import com.example.GestionDeCine.service.ClienteService;
+import com.example.GestionDeCine.model.Usuario;
+import com.example.GestionDeCine.service.UsuarioService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,25 +9,25 @@ import java.util.*;
 @RestController
 @RequestMapping("/clientes")
 public class ClienteController {
-    private final ClienteService clienteService;
+    private final UsuarioService clienteService;
 
-    public ClienteController(ClienteService clienteService) {
+    public ClienteController(UsuarioService clienteService) {
         this.clienteService = clienteService;
     }
 
     @GetMapping
-    public List<Cliente> obtenerClientes() {
+    public List<Usuario> obtenerClientes() {
         return clienteService.obtenerClientes();
     }
 
     @GetMapping("/{id}")
-    public Cliente obtenerCliente(@PathVariable Integer id) {
+    public Usuario obtenerCliente(@PathVariable Integer id) {
         return clienteService.obtenerCliente(id);
     }
 
     @PostMapping
-    public Cliente crearCliente(@RequestBody Cliente cliente) {
-        return clienteService.crearCliente(cliente);
+    public Usuario crearCliente(@RequestBody Usuario usuario) {
+        return clienteService.crearCliente(usuario);
     }
 
     @DeleteMapping("/{id}")
