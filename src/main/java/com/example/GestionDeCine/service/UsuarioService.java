@@ -30,6 +30,33 @@ import org.springframework.stereotype.Service;
     }
 
     @Override
+    public Usuario crearUsuario(Usuario usuario) {
+        return usuarioRepository.save(usuario);
+    }
+
+
+
+    @Override
+    public Usuario modificarUsuario(Integer id, Usuario usuario){
+        Usuario usuarioExiste= usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        usuarioExiste.setNombreApellido(usuario.getNombreApellido());
+        usuarioExiste.setDni(usuario.getDni());
+        usuarioExiste.setFechaNacimiento(usuario.getFechaNacimiento());
+        usuarioExiste.setMail(usuario.getMail());
+        usuarioExiste.setPassword(usuario.getPassword());
+        usuarioExiste.setSocio(usuario.isSocio());
+        usuarioExiste.setRol(usuario.getRol());
+        return usuarioRepository.save(usuarioExiste);
+
+    }
+
+    @Override
+    public void eliminarUsuario(Integer id) {
+        usuarioRepository.deleteById(id);
+    }
+
+
+    @Override
     public boolean tienePermiso(Usuario usuario, String operacion) {
 
         switch (usuario.getRol()){
@@ -51,7 +78,7 @@ import org.springframework.stereotype.Service;
                 return false;
         }
 
+
+
     }
-
-
 }

@@ -1,0 +1,13 @@
+### Crear usuario
+POST http://localhost:8080/api/usuarios
+Content-Type: application/json
+
+{
+  "nombreApellido": "Gonzalo Calveira",
+  "dni": 12345678,
+  "fechaNacimiento": "2005-03-10",
+  "mail": "gonzalo@gmail.com",
+  "password": "1234",
+  "isSocio": true,
+  "rol": "CLIENTE"
+}

@@ -6,6 +6,7 @@ import java.time.LocalDate;
 @Entity
 @Data
 @ToString
+@Table (name="usuarios")
 public class Usuario{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +21,7 @@ public class Usuario{
     private Rol rol;
     @Enumerated(EnumType.STRING)
     private Membresia membresia;
+
     public Usuario() {
     }
 

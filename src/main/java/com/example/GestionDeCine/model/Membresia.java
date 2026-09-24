@@ -8,7 +8,7 @@ import lombok.*;
 @Data
 public class Membresia {
 
-    @id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
     private Integer id;
