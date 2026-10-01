@@ -17,13 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Una funcion es la unidad "vendible" del cine: una Pelicula proyectada en
- * una Sala, en una fecha/horario y formato determinados, con un precio de
- * entrada. Las relaciones con Pelicula y Sala son unidireccionales
- * (@ManyToOne desde Funcion) para evitar colecciones bidireccionales que
- * compliquen la serializacion JSON y el equals/hashCode de Lombok.
- */
+
 @Entity
 @Data
 @NoArgsConstructor

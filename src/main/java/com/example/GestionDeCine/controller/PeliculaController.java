@@ -18,7 +18,7 @@ import com.example.GestionDeCine.service.interfaces.IPeliculaService;
 
 import jakarta.validation.Valid;
 
-/** CRUD de peliculas del catalogo. */
+
 @RestController
 @RequestMapping("/api/peliculas")
 public class PeliculaController {

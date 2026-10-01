@@ -15,12 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Comprobante de compra: registra que un {@link Usuario} pago un
- * {@link Entrada} en un momento (fechaCompra) y a un precio determinado
- * (se copia el precio de la Funcion al momento de la compra, para que un
- * cambio de precio futuro no altere el historial de compras ya realizadas).
- */
+
 @Entity
 @Data
 @NoArgsConstructor

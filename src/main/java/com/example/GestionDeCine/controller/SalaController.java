@@ -20,7 +20,7 @@ import com.example.GestionDeCine.model.Asiento;
 
 import jakarta.validation.Valid;
 
-/** CRUD de salas, mas la consulta de los asientos de una sala. */
+
 @RestController
 @RequestMapping("/api/salas")
 public class SalaController {

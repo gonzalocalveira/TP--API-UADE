@@ -19,7 +19,7 @@ import com.example.GestionDeCine.service.interfaces.IFuncionService;
 
 import jakarta.validation.Valid;
 
-/** CRUD de funciones (pelicula + sala + horario) y disponibilidad de asientos. */
+
 @RestController
 @RequestMapping("/api/funciones")
 public class FuncionController {

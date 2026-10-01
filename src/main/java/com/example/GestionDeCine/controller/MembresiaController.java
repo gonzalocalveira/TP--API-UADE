@@ -17,15 +17,7 @@ import com.example.GestionDeCine.repository.UsuarioRepository;
 
 import jakarta.validation.Valid;
 
-/**
- * Alta y baja de membresias. Se mantiene aparte de ClienteController (que
- * solo consulta la membresia del propio cliente) porque dar de alta una
- * membresia es tipicamente una operacion administrativa/de empleado.
- * Al ser una entidad simple, no se creo una capa de Service dedicada: la
- * unica regla de negocio (que el usuario no tenga ya una membresia) se
- * valida aqui mismo contra el repository; si el TPO creciera, esta logica
- * se extraeria a un MembresiaService.
- */
+
 @RestController
 @RequestMapping("/api/membresias")
 public class MembresiaController {

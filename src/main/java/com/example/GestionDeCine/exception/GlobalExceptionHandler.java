@@ -15,15 +15,7 @@ import org.springframework.web.context.request.WebRequest;
 
 import com.example.GestionDeCine.dto.ErrorResponseDTO;
 
-/**
- * Punto unico de manejo de errores para toda la API.
- *
- * @RestControllerAdvice intercepta las excepciones lanzadas desde cualquier
- * @RestController y las transforma en una respuesta HTTP con el formato
- * ErrorResponseDTO, en vez de dejar que Spring devuelva su pagina de error
- * generica (HTML) o un stacktrace crudo. Esto cumple con el requerimiento
- * de "manejo de errores y respuestas apropiadas" / "codigos de estado HTTP".
- */
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

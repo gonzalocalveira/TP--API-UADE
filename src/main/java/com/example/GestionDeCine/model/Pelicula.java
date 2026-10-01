@@ -13,7 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** Catalogo de peliculas que el cine puede proyectar. */
+
 @Entity
 @Data
 @NoArgsConstructor

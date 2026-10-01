@@ -20,17 +20,7 @@ import com.example.GestionDeCine.service.interfaces.IUsuarioService;
 
 import jakarta.validation.Valid;
 
-/**
- * Expone las operaciones CRUD de Usuario y el login.
- *
- * Capa Controller: SOLO se encarga de traducir HTTP <-> objetos Java
- * (deserializar el body, delegar en el Service, elegir el status code de
- * la respuesta). No contiene reglas de negocio: esas viven en
- * IUsuarioService/UsuarioService. Esto responde directamente a la pregunta
- * guia "que ocurriria si colocaramos toda la logica en el Controller?":
- * el controller quedaria acoplado a HTTP y no se podria reutilizar la
- * logica desde otro punto de entrada (por ejemplo, un job interno).
- */
+
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {

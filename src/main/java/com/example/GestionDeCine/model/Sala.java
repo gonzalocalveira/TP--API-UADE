@@ -11,13 +11,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Sala fisica del cine. En el diseño original, Sala tenia una lista de
- * Peliculas, lo cual no representa el dominio correctamente: una sala no
- * "pertenece" a una pelicula, sino que en una sala se programan Funciones
- * (una Funcion vincula una Pelicula con una Sala en una fecha/horario
- * determinado). Esa relacion se movio a {@link Funcion}.
- */
+
+
+
+
+
 @Entity
 @Data
 @NoArgsConstructor

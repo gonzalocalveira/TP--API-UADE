@@ -18,7 +18,7 @@ import com.example.GestionDeCine.service.interfaces.IAsientoService;
 
 import jakarta.validation.Valid;
 
-/** CRUD de asientos (independiente de /api/salas/{id}/asientos, que es de solo lectura). */
+
 @RestController
 @RequestMapping("/api/asientos")
 public class AsientoController {

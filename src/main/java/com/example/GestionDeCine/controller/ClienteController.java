@@ -19,12 +19,7 @@ import com.example.GestionDeCine.service.interfaces.IClienteService;
 
 import jakarta.validation.Valid;
 
-/**
- * Endpoints de e-commerce del lado del cliente: cartelera, compra de
- * entradas, historial y membresia. Se mantiene separado de
- * UsuarioController porque representa un recurso/uso distinto de la API
- * (acciones de negocio del cliente, no administracion de la cuenta).
- */
+
 @RestController
 @RequestMapping("/api/clientes")
 public class ClienteController {

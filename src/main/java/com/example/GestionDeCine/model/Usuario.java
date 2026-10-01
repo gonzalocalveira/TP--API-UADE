@@ -22,22 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Entidad de dominio: un usuario del sistema (cliente, empleado o
- * administrador). El @Enumerated(EnumType.STRING) guarda "CLIENTE" /
- * "EMPLEADO" / "ADMINISTRADOR" como texto en la columna "rol" en vez de un
- * numero ordinal, para que la base de datos sea legible y no se rompa si
- * el enum Rol cambia de orden.
- *
- * Decision de diseño: Usuario NO tiene una referencia directa a Membresia.
- * La relacion es 1 a 1 pero el "dueño" de la relacion (quien tiene la FK)
- * es Membresia (columna usuario_id). Esto evita una relacion bidireccional
- * Usuario<->Membresia, que con Lombok (@Data genera equals/hashCode/toString)
- * y con la serializacion JSON de Jackson terminaria en referencias
- * circulares infinitas (Usuario.toString() -> Membresia.toString() ->
- * Usuario.toString() -> ...). Para consultar la membresia de un usuario se
- * usa MembresiaRepository.findByUsuarioId(id).
- */
+
 @Entity
 @Table(name = "usuarios", uniqueConstraints = {
         @UniqueConstraint(columnNames = "mail"),

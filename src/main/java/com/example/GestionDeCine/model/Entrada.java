@@ -13,14 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Representa la ocupacion de un {@link Asiento} puntual para una
- * {@link Funcion} puntual. Se crea en el momento de la compra (ver
- * ClienteService.comprarEntrada) con estado OCUPADA; no se pre-generan
- * entradas para todos los asientos de todas las funciones (eso se calcula
- * "al vuelo" comparando los asientos de la sala contra las entradas ya
- * ocupadas de esa funcion, ver FuncionService.obtenerAsientosDisponibles).
- */
+
 @Entity
 @Data
 @NoArgsConstructor

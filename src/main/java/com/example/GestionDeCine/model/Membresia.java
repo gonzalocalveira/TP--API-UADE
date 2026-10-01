@@ -14,13 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Membresia/socio del cine. Relacion 1 a 1 con Usuario: cada Membresia
- * pertenece a un unico Usuario y cada Usuario tiene, a lo sumo, una
- * Membresia. Esta clase es el lado "dueño" de la relacion (tiene la
- * foreign key usuario_id, con restriccion unique para que no puedan existir
- * dos membresias para el mismo usuario).
- */
+
 @Entity
 @Data
 @NoArgsConstructor

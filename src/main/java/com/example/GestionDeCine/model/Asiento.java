@@ -15,16 +15,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Un asiento fisico dentro de una {@link Sala}. La relacion con Sala es
- * @ManyToOne (muchos asientos por sala) y no @OneToOne como estaba en el
- * diseño original, que solo permitia un asiento por sala.
- */
+
 @Entity
-// Nota: los nombres de columna van en snake_case (sala_id, fila_asiento,
-// numero_asiento) porque esa es la convencion que usa por defecto la
-// naming strategy de Spring Boot/Hibernate para convertir los nombres de
-// campo (camelCase) a nombres de columna SQL.
+
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = { "sala_id", "fila_asiento", "numero_asiento" }))
 @Data
 @NoArgsConstructor
