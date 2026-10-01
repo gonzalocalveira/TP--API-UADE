@@ -1,11 +1,16 @@
 package com.example.GestionDeCine.repository;
 
-import com.example.GestionDeCine.model.Funcion;
-import lombok.experimental.FieldNameConstants;
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import com.example.GestionDeCine.model.Funcion;
 
+@Repository
 public interface FuncionRepository extends JpaRepository<Funcion, Integer> {
-    Optional <Funcion> findById(Integer funcionId);
+    List<Funcion> findByPeliculaId(Integer peliculaId);
+
+    List<Funcion> findByFechaFuncionGreaterThanEqual(LocalDate fecha);
 }

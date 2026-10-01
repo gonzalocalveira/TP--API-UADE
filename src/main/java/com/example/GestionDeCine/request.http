@@ -1,13 +1,203 @@
-### Crear usuario
-POST http://localhost:8080/api/usuarios
+### Coleccion de pruebas manuales de la API.
+### Se puede ejecutar con la extension "REST Client" de VS Code, con
+### IntelliJ (que la interpreta nativamente) o copiando cada request a
+### Postman/Insomnia. Sirve como evidencia de que los endpoints funcionan
+### (GET / POST / PUT / DELETE, casos exitosos y casos con error), tal
+### como pide el enunciado de la Etapa 1.
+
+@host = http://localhost:8080
+
+### ---------------------------------------------------------------------
+### USUARIOS
+### ---------------------------------------------------------------------
+
+### Crear un usuario (caso exitoso)
+POST {{host}}/api/usuarios
 Content-Type: application/json
 
 {
   "nombreApellido": "Gonzalo Calveira",
   "dni": 12345678,
-  "fechaNacimiento": "2005-03-10",
+  "fechaNacimiento": "2000-03-10",
   "mail": "gonzalo@gmail.com",
   "password": "1234",
   "isSocio": true,
   "rol": "CLIENTE"
 }
+
+### Crear un usuario con datos invalidos (caso de error -> 400)
+POST {{host}}/api/usuarios
+Content-Type: application/json
+
+{
+  "nombreApellido": "",
+  "dni": -1,
+  "mail": "no-es-un-mail",
+  "password": "12",
+  "rol": null
+}
+
+### Listar usuarios
+GET {{host}}/api/usuarios
+
+### Obtener un usuario que no existe (caso de error -> 404)
+GET {{host}}/api/usuarios/9999
+
+### Login correcto
+POST {{host}}/api/usuarios/login
+Content-Type: application/json
+
+{
+  "mail": "gonzalo@gmail.com",
+  "password": "1234"
+}
+
+### Login con password incorrecta (caso de error -> 401)
+POST {{host}}/api/usuarios/login
+Content-Type: application/json
+
+{
+  "mail": "gonzalo@gmail.com",
+  "password": "incorrecta"
+}
+
+### Modificar usuario 1
+PUT {{host}}/api/usuarios/1
+Content-Type: application/json
+
+{
+  "nombreApellido": "Gonzalo E. Calveira",
+  "dni": 12345678,
+  "fechaNacimiento": "2000-03-10",
+  "mail": "gonzalo@gmail.com",
+  "password": "1234",
+  "isSocio": true,
+  "rol": "CLIENTE"
+}
+
+### Crear un segundo usuario (se usa para probar el DELETE)
+POST {{host}}/api/usuarios
+Content-Type: application/json
+
+{
+  "nombreApellido": "Usuario Temporal",
+  "dni": 87654321,
+  "fechaNacimiento": "1995-07-20",
+  "mail": "temporal@gmail.com",
+  "password": "abcd",
+  "isSocio": false,
+  "rol": "CLIENTE"
+}
+
+### Eliminar usuario 2 (caso exitoso -> 204)
+### (el usuario 1 se mantiene porque se usa mas abajo para comprar entradas)
+DELETE {{host}}/api/usuarios/2
+
+### Eliminar un usuario que no existe (caso de error -> 404)
+DELETE {{host}}/api/usuarios/9999
+
+
+### ---------------------------------------------------------------------
+### PELICULAS
+### ---------------------------------------------------------------------
+
+### Crear pelicula
+POST {{host}}/api/peliculas
+Content-Type: application/json
+
+{
+  "nombre": "Interstellar",
+  "director": "Christopher Nolan",
+  "duracion": 169,
+  "fechaEstreno": "2014-11-06",
+  "idioma": "Ingles (subtitulada)",
+  "genero": "Ciencia ficcion",
+  "clasificacionEdad": "ATP",
+  "sinopsis": "Un grupo de exploradores viaja a traves de un agujero de gusano."
+}
+
+### Listar cartelera (catalogo de peliculas)
+GET {{host}}/api/peliculas
+
+
+### ---------------------------------------------------------------------
+### SALAS Y ASIENTOS
+### ---------------------------------------------------------------------
+
+### Crear sala
+POST {{host}}/api/salas
+Content-Type: application/json
+
+{
+  "nombre": "Sala 1",
+  "capacidad": 40
+}
+
+### Crear asiento en la sala 1
+POST {{host}}/api/asientos
+Content-Type: application/json
+
+{
+  "numeroAsiento": 1,
+  "filaAsiento": "A",
+  "sala": { "id": 1 }
+}
+
+### Ver asientos de la sala 1
+GET {{host}}/api/salas/1/asientos
+
+
+### ---------------------------------------------------------------------
+### FUNCIONES
+### ---------------------------------------------------------------------
+
+### Crear funcion (pelicula 1 en sala 1)
+POST {{host}}/api/funciones
+Content-Type: application/json
+
+{
+  "fechaFuncion": "2026-10-01",
+  "horaFuncion": "21:30:00",
+  "formatoFuncion": "TRES_D",
+  "precio": 3500,
+  "pelicula": { "id": 1 },
+  "sala": { "id": 1 }
+}
+
+### Ver asientos disponibles de la funcion 1
+GET {{host}}/api/funciones/1/asientos-disponibles
+
+
+### ---------------------------------------------------------------------
+### COMPRA DE ENTRADAS (logica de negocio principal)
+### ---------------------------------------------------------------------
+
+### Comprar entrada (caso exitoso)
+POST {{host}}/api/clientes/compras
+Content-Type: application/json
+
+{
+  "usuarioId": 1,
+  "funcionId": 1,
+  "asientoId": 1
+}
+
+### Volver a comprar el mismo asiento para la misma funcion (caso de error -> 409)
+POST {{host}}/api/clientes/compras
+Content-Type: application/json
+
+{
+  "usuarioId": 1,
+  "funcionId": 1,
+  "asientoId": 1
+}
+
+### Ver historial de compras del usuario 1
+GET {{host}}/api/clientes/1/historial
+
+### Ver membresia del usuario 1 (si no tiene -> 404)
+GET {{host}}/api/clientes/1/membresia
+
+### Eliminar la sala 1, que tiene asientos y funciones asociadas
+### (caso de error -> 409: la foreign key no permite dejar registros huerfanos)
+DELETE {{host}}/api/salas/1

@@ -1,5 +1,8 @@
 HELP.md
 target/
+
+### Base de datos H2 local (se regenera sola al levantar la app) ###
+data/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
