@@ -11,5 +11,5 @@ public interface IAdministrador {
 
     void eliminarCliente(Integer id);
 
-
+    //dar de altas empleados, modificar salas, CRUD PELICULAS/empleados/CANDY
 }
