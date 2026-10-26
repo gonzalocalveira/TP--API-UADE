@@ -12,6 +12,8 @@ import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotBlank;
 
 
 @Entity
@@ -46,5 +48,7 @@ public class Pelicula {
     @NotBlank(message = "La clasificacion por edad es obligatoria")
     private String clasificacionEdad;
 
+    @NotBlank(message = "La sinopsis es obligatoria")
+    @Column(nullable = false)
     private String sinopsis;
 }

@@ -2,6 +2,7 @@ package com.example.GestionDeCine.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import com.example.GestionDeCine.model.EstadoEntrada;
 import com.example.GestionDeCine.model.Funcion;
 import com.example.GestionDeCine.model.Membresia;
 import com.example.GestionDeCine.model.Pelicula;
+import com.example.GestionDeCine.model.Rol;
 import com.example.GestionDeCine.model.TicketCompra;
 import com.example.GestionDeCine.model.Usuario;
 import com.example.GestionDeCine.repository.AsientoRepository;
@@ -26,10 +28,9 @@ import com.example.GestionDeCine.repository.UsuarioRepository;
 import com.example.GestionDeCine.service.interfaces.IClienteService;
 
 /**
- * Logica de negocio de las operaciones que realiza un cliente. Se mantiene
- * separada de UsuarioService porque responde a una responsabilidad
- * distinta (acciones de e-commerce del cliente) y no a la gestion de la
- * cuenta de usuario en si.
+ * Se encarga de consultar la cartelera, consultar el historial de compras, consultar la membresia y comprar entradas para las funciones del cine.
+ * Utiliza los repositorios para recuperar y guardar la informacion.
+ * Las operaciones de compra se ejecutan dentro de una transaccion para evitar guardar parcialmente una compra si ocurre un error.
  */
 @Service
 public class ClienteService implements IClienteService {
@@ -42,13 +43,16 @@ public class ClienteService implements IClienteService {
     private final EntradaRepository entradaRepository;
     private final PeliculaRepository peliculaRepository;
 
-    public ClienteService(TicketCompraRepository ticketCompraRepository,
-                           MembresiaRepository membresiaRepository,
-                           UsuarioRepository usuarioRepository,
-                           FuncionRepository funcionRepository,
-                           AsientoRepository asientoRepository,
-                           EntradaRepository entradaRepository,
-                           PeliculaRepository peliculaRepository) {
+
+    public ClienteService(
+            TicketCompraRepository ticketCompraRepository,
+            MembresiaRepository membresiaRepository,
+            UsuarioRepository usuarioRepository,
+            FuncionRepository funcionRepository,
+            AsientoRepository asientoRepository,
+            EntradaRepository entradaRepository,
+            PeliculaRepository peliculaRepository) {
+
         this.ticketCompraRepository = ticketCompraRepository;
         this.membresiaRepository = membresiaRepository;
         this.usuarioRepository = usuarioRepository;
@@ -58,65 +62,135 @@ public class ClienteService implements IClienteService {
         this.peliculaRepository = peliculaRepository;
     }
 
+
+
     @Override
+    @Transactional(readOnly = true)
     public List<TicketCompra> verHistorial(Integer usuarioId) {
-        if (!usuarioRepository.existsById(usuarioId)) {
-            throw new ResourceNotFoundException("Usuario no encontrado con id " + usuarioId);
-        }
+
+        Usuario usuario = obtenerUsuarioPorId(usuarioId);
+
+        validarCliente(usuario);
+
         return ticketCompraRepository.findByUsuarioId(usuarioId);
     }
 
+
     @Override
+    @Transactional(readOnly = true)
     public Membresia verMembresia(Integer usuarioId) {
-        if (!usuarioRepository.existsById(usuarioId)) {
-            throw new ResourceNotFoundException("Usuario no encontrado con id " + usuarioId);
-        }
+
+        Usuario usuario = obtenerUsuarioPorId(usuarioId);
+
+        validarCliente(usuario);
+
         return membresiaRepository.findByUsuarioId(usuarioId)
-                .orElseThrow(() -> new ResourceNotFoundException("El usuario " + usuarioId + " no tiene una membresia asociada"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "El usuario " + usuarioId
+                                        + " no tiene una membresia asociada"
+                        )
+                );
     }
 
+
+
     /**
-     * Regla de negocio central del dominio: comprar una entrada.
-     * Pasos (y por que estan en este orden):
-     *  1. Validar que usuario, funcion y asiento existan (404 si no).
-     *  2. Validar que el asiento pertenezca a la sala de esa funcion
-     *     (no tendria sentido vender el asiento de una sala para una
-     *     funcion que se proyecta en otra sala).
-     *  3. Validar que ese asiento no este ya vendido para esa funcion
-     *     puntual (evita "doble venta" del mismo lugar).
-     *  4. Recien ahi se crea la Entrada (OCUPADA) y el TicketCompra.
-     * @Transactional asegura que si algo falla a mitad de camino (por
-     * ejemplo, al guardar el TicketCompra) la Entrada creada en el paso 4
-     * tambien se revierte, evitando dejar datos inconsistentes.
+     * Registra la compra de una entrada para una funcion determinada.
+     * Pasos:
+     * 1. Valida los identificadores recibidos.
+     * 2. Comprueba que el usuario exista y sea un cliente.
+     * 3. Comprueba que la funcion y el asiento existan.
+     * 4. Verifica que el asiento pertenezca a la sala de la funcion.
+     * 5. Comprueba que el asiento no este ocupado para esa funcion.
+     * 6. Crea la entrada con estado OCUPADA.
+     * 7. Registra el ticket de compra con su fecha y precio.
+     * @Transactional permite revertir las operaciones de persistencia si se produce un error durante el registro de la compra.
      */
     @Override
     @Transactional
-    public TicketCompra comprarEntrada(Integer usuarioId, Integer funcionId, Integer asientoId) {
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id " + usuarioId));
+    public TicketCompra comprarEntrada(
+            Integer usuarioId,
+            Integer funcionId,
+            Integer asientoId) {
 
-        Funcion funcion = funcionRepository.findById(funcionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Funcion no encontrada con id " + funcionId));
 
-        Asiento asiento = asientoRepository.findById(asientoId)
-                .orElseThrow(() -> new ResourceNotFoundException("Asiento no encontrado con id " + asientoId));
+        validarId(usuarioId, "usuario");
+        validarId(funcionId, "funcion");
+        validarId(asientoId, "asiento");
 
-        if (!asiento.getSala().getId().equals(funcion.getSala().getId())) {
-            throw new BusinessException("El asiento seleccionado no pertenece a la sala de la funcion");
+
+        Usuario usuario = obtenerUsuarioPorId(usuarioId);
+        validarCliente(usuario);
+
+
+        Funcion funcion = obtenerFuncionPorId(funcionId);
+
+
+        Asiento asiento = obtenerAsientoPorId(asientoId);
+
+
+        if (funcion.getSala() == null
+                || funcion.getSala().getId() == null) {
+            throw new BusinessException(
+                    "La funcion no tiene una sala valida asociada"
+            );
         }
 
-        boolean ocupado = entradaRepository.existsByFuncionIdAndAsientoIdAndEstado(
-                funcionId, asientoId, EstadoEntrada.OCUPADA);
+
+        if (asiento.getSala() == null
+                || asiento.getSala().getId() == null) {
+            throw new BusinessException(
+                    "El asiento no tiene una sala valida asociada"
+            );
+        }
+
+
+        if (!Objects.equals(
+                asiento.getSala().getId(),
+                funcion.getSala().getId())) {
+
+            throw new BusinessException(
+                    "El asiento seleccionado no pertenece "
+                            + "a la sala de la funcion"
+            );
+        }
+
+
+        if (funcion.getPrecio() == null
+                || !Double.isFinite(funcion.getPrecio())
+                || funcion.getPrecio() <= 0) {
+
+            throw new BusinessException(
+                    "La funcion no tiene un precio valido"
+            );
+        }
+
+
+        boolean ocupado =
+                entradaRepository.existsByFuncionIdAndAsientoIdAndEstado(
+                        funcionId,
+                        asientoId,
+                        EstadoEntrada.OCUPADA
+                );
+
         if (ocupado) {
-            throw new BusinessException("El asiento ya esta ocupado para esta funcion");
+            throw new BusinessException(
+                    "El asiento ya esta ocupado para esta funcion"
+            );
         }
 
+        // Crea la entrada asociada a la funcion y al asiento.
+        // Se marca como OCUPADA porque se esta registrando la compra.
         Entrada entrada = new Entrada();
         entrada.setFuncion(funcion);
         entrada.setAsiento(asiento);
         entrada.setEstado(EstadoEntrada.OCUPADA);
+
+
         entrada = entradaRepository.save(entrada);
 
+        // Registra el ticket que representa la compra realizada.
         TicketCompra ticketCompra = new TicketCompra();
         ticketCompra.setUsuario(usuario);
         ticketCompra.setEntrada(entrada);
@@ -126,8 +200,78 @@ public class ClienteService implements IClienteService {
         return ticketCompraRepository.save(ticketCompra);
     }
 
+
     @Override
+    @Transactional(readOnly = true)
     public List<Pelicula> verCartelera() {
         return peliculaRepository.findAll();
+    }
+
+
+
+    /**
+     * Busca un usuario por su identificador.
+
+     */
+    private Usuario obtenerUsuarioPorId(Integer id) {
+
+        validarId(id, "usuario");
+
+        return usuarioRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Usuario no encontrado con id " + id
+                        )
+                );
+    }
+
+    /**
+     * Busca una funcion por su identificador.
+     */
+    private Funcion obtenerFuncionPorId(Integer id) {
+
+        validarId(id, "funcion");
+
+        return funcionRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Funcion no encontrada con id " + id
+                        )
+                );
+    }
+
+    /**
+     * Busca un asiento por su identificador.
+     */
+    private Asiento obtenerAsientoPorId(Integer id) {
+
+        validarId(id, "asiento");
+
+        return asientoRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Asiento no encontrado con id " + id
+                        )
+                );
+    }
+
+
+    private void validarCliente(Usuario usuario) {
+
+        if (usuario.getRol() != Rol.CLIENTE) {
+            throw new BusinessException(
+                    "Esta operacion solo esta permitida para clientes"
+            );
+        }
+    }
+
+
+    private void validarId(Integer id, String entidad) {
+
+        if (id == null || id <= 0) {
+            throw new ResourceNotFoundException(
+                    "Identificador de " + entidad + " invalido: " + id
+            );
+        }
     }
 }
