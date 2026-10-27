@@ -136,4 +136,47 @@ erDiagram
 9. Tests unitarios (Mockito), test de controller (MockMvc) y `contextLoads` contra MySQL.
 10. Verificación con curl, colección Postman y documentación.
 
-<!-- ESTADO_FINAL -->
+---
+
+# Parte 2: estado final (rama `mejoras-backend`)
+
+## Verificación realizada (27/10/2026, MySQL 8.0.46 local)
+
+| Verificación | Resultado |
+|---|---|
+| `./mvnw clean test` | **20 tests, 0 fallas**: 10 de compra/cancelación, 3 de funciones, 3 de salas (Mockito), 3 de controller (MockMvc) y `contextLoads` con `ddl-auto=validate` contra la base creada por el script |
+| `database/01_schema.sql` + `02_datos.sql` con el cliente `mysql.exe` | Sin errores. 4 películas, 2 salas, 70 butacas, 6 funciones, 3 usuarios, 1 membresía |
+| Arranque con `validate` | `Started GestionDeCineApplication`: el esquema coincide con las entidades |
+| curl a todos los endpoints (casos 200/201/204/400/401/404/405/409) | **97/97** con el código esperado |
+| Flujo completo: cartelera → funciones → butacas → comprar → recomprar (409) → cancelar → butaca libre → recomprar (201) | OK |
+| 5 compras **simultáneas** de la misma butaca | 1 × 201, 4 × 409. Queda **1** sola entrada en la base |
+| Colección Postman ejecutada en orden contra el servidor | **68/68** con el código esperado |
+
+Bugs encontrados durante la verificación y corregidos:
+- `isSocio` salía duplicado como `socio` en el JSON.
+- Los AUTO_INCREMENT del `INSERT ... SELECT` dejaban huecos en los ids de las butacas de prueba. Ahora se ponen ids explícitos.
+
+## Rúbrica: estado final
+
+| # | Requisito | Estado | Evidencia |
+|---|---|---|---|
+| 1 | Arquitectura por capas | ✅ | `controller` → `service` (+ `interfaces`) → `repository` → `model`, más `dto`, `mapper`, `exception` y `config`. Ver `ARQUITECTURA.md` |
+| 2 | Persistencia SQL (MySQL) | ✅ | `database/01_schema.sql`, `ddl-auto=validate`, `mysql-connector-j` |
+| 3 | Entidades del dominio | ✅ | Pelicula, Sala, Asiento, Funcion, Usuario, Membresia, TicketCompra (1→N) Entrada |
+| 4 | CRUD | ✅ | GET/POST/PUT/DELETE de películas, salas, butacas, funciones y usuarios; alta y baja de membresías |
+| 5 | Lógica de negocio | ✅ | 34 reglas documentadas en `REGLAS_NEGOCIO.md`: superposición, butaca ocupada (con bloqueo), total en servidor, cancelación… |
+| 6 | Endpoints para clientes externos | ✅ | 36 endpoints REST en `ENDPOINTS.md` |
+| 7 | Manejo de requests/responses HTTP | ✅ | `ResponseEntity` con 200/201/204/400/401/404/405/409/500 y DTOs en todas las respuestas |
+| 8 | Validación de entrada | ✅ | Bean Validation en los `*RequestDTO` + `@Valid` en los controllers |
+| 9 | Manejo de errores | ✅ | `GlobalExceptionHandler`: formato único, sin stack traces al cliente, log de los 500 |
+| 10 | Ejecución en localhost | ✅ | `./mvnw spring-boot:run` → `http://localhost:8080`. Todo configurable por variables de entorno |
+| 11 | Documentación de endpoints | ✅ | `ENDPOINTS.md` + colección Postman |
+| 12 | Separación negocio / datos / comunicación | ✅ | Los controllers no usan repositorios ni entidades. `MembresiaController` delega en `MembresiaService` |
+| 13 | Ejecución en tiempo real | ✅ | Verificado con curl y Postman contra el servidor en ejecución (tabla de arriba) |
+
+## Riesgos y limitaciones que quedan (conocidos y documentados)
+
+- **Sin autenticación real**: cualquiera puede llamar a cualquier endpoint (incluido cancelar compras ajenas), y las passwords están en texto plano. Es una decisión de alcance de la Etapa 1.
+- **Fechas relativas**: los datos de prueba tienen funciones a partir de "mañana", así que hay que correr 01 + 02 cerca de la fecha de la demo.
+- **`mvn test` necesita MySQL**: el test `contextLoads` valida contra la base real, ya que H2 no está permitido.
+- **Commits intermedios**: los commits de modelo, DTO, service y controller de la refactorización no compilan por separado (dependen entre sí); a partir del de tests, todo compila y pasa.
