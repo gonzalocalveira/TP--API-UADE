@@ -24,10 +24,9 @@ public class UsuarioResponseDTO {
     private Integer dni;
     private LocalDate fechaNacimiento;
     private String mail;
-    // Con un boolean llamado "isSocio", Lombok genera isSocio()/setSocio() y
-    // Jackson lo expondria como "socio". @JsonProperty fuerza el nombre
-    // "isSocio" en el JSON (tanto al leer el body como al responder).
+    // Lombok genera isSocio() para este boolean y Jackson lo llamaria "socio".
+    // @JsonProperty lo renombra a "isSocio" para mantener el nombre que ya usaba la API.
     @JsonProperty("isSocio")
-    private boolean isSocio;
+    private boolean socio;
     private Rol rol;
 }
