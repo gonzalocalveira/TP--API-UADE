@@ -1,21 +1,33 @@
 package com.example.GestionDeCine.service.interfaces;
 
+import java.time.LocalDate;
 import java.util.List;
 
-import com.example.GestionDeCine.model.Asiento;
-import com.example.GestionDeCine.model.Funcion;
+import com.example.GestionDeCine.dto.AsientoResponseDTO;
+import com.example.GestionDeCine.dto.ButacaDTO;
+import com.example.GestionDeCine.dto.FuncionRequestDTO;
+import com.example.GestionDeCine.dto.FuncionResponseDTO;
 
+/** Contrato de la logica de negocio de funciones. */
 public interface IFuncionService {
-    List<Funcion> obtenerFunciones();
 
-    Funcion obtenerFuncionPorId(Integer id);
+    /** Lista funciones; peliculaId y fecha son filtros opcionales (null = sin filtro). */
+    List<FuncionResponseDTO> obtenerFunciones(Integer peliculaId, LocalDate fecha);
 
-    Funcion crearFuncion(Funcion funcion);
+    FuncionResponseDTO obtenerFuncionPorId(Integer id);
 
-    Funcion modificarFuncion(Integer id, Funcion funcion);
+    /** Falla con 409 si empieza en el pasado o se superpone con otra funcion de la misma sala. */
+    FuncionResponseDTO crearFuncion(FuncionRequestDTO dto);
 
+    /** Ademas de las reglas de crear, falla con 409 si ya tiene compras. */
+    FuncionResponseDTO modificarFuncion(Integer id, FuncionRequestDTO dto);
+
+    /** Falla con 409 si ya tiene compras. */
     void eliminarFuncion(Integer id);
 
-    /** Asientos de la sala de la funcion que todavia NO fueron comprados para esa funcion puntual. */
-    List<Asiento> obtenerAsientosDisponibles(Integer funcionId);
+    /** Todas las butacas de la sala de la funcion, indicando cuales estan ocupadas. */
+    List<ButacaDTO> obtenerButacas(Integer funcionId);
+
+    /** Solo las butacas libres de la funcion. */
+    List<AsientoResponseDTO> obtenerAsientosDisponibles(Integer funcionId);
 }

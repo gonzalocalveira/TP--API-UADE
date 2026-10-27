@@ -2,16 +2,20 @@ package com.example.GestionDeCine.service.interfaces;
 
 import java.util.List;
 
-import com.example.GestionDeCine.model.Sala;
+import com.example.GestionDeCine.dto.SalaRequestDTO;
+import com.example.GestionDeCine.dto.SalaResponseDTO;
 
+/** Contrato de la logica de negocio de salas. */
 public interface ISalaService {
-    List<Sala> obtenerSalas();
 
-    Sala obtenerSalaPorId(Integer id);
+    List<SalaResponseDTO> obtenerSalas();
 
-    Sala crearSala(Sala sala);
+    SalaResponseDTO obtenerSalaPorId(Integer id);
 
-    Sala modificarSala(Integer id, Sala sala);
+    SalaResponseDTO crearSala(SalaRequestDTO dto);
 
+    SalaResponseDTO modificarSala(Integer id, SalaRequestDTO dto);
+
+    /** Falla con 409 si la sala tiene butacas o funciones. */
     void eliminarSala(Integer id);
 }

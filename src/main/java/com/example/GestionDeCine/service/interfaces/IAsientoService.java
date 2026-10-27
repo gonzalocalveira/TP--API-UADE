@@ -2,18 +2,22 @@ package com.example.GestionDeCine.service.interfaces;
 
 import java.util.List;
 
-import com.example.GestionDeCine.model.Asiento;
+import com.example.GestionDeCine.dto.AsientoRequestDTO;
+import com.example.GestionDeCine.dto.AsientoResponseDTO;
 
+/** Contrato de la logica de negocio de butacas. */
 public interface IAsientoService {
-    List<Asiento> obtenerAsientos();
 
-    List<Asiento> obtenerAsientosPorSala(Integer salaId);
+    List<AsientoResponseDTO> obtenerAsientos();
 
-    Asiento obtenerAsientoPorId(Integer id);
+    List<AsientoResponseDTO> obtenerAsientosPorSala(Integer salaId);
 
-    Asiento crearAsiento(Asiento asiento);
+    AsientoResponseDTO obtenerAsientoPorId(Integer id);
 
-    Asiento modificarAsiento(Integer id, Asiento asiento);
+    AsientoResponseDTO crearAsiento(AsientoRequestDTO dto);
 
+    AsientoResponseDTO modificarAsiento(Integer id, AsientoRequestDTO dto);
+
+    /** Falla con 409 si la butaca ya fue vendida alguna vez. */
     void eliminarAsiento(Integer id);
 }
