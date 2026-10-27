@@ -3,23 +3,22 @@ package com.example.GestionDeCine.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.example.GestionDeCine.model.EstadoEntrada;
 import com.example.GestionDeCine.model.Entrada;
+import com.example.GestionDeCine.model.EstadoEntrada;
 
-/**
- * El diseño original declaraba "boolean isOcupado(...)" sin @Query ni una
- * convencion de nombre que Spring Data pudiera interpretar (no compilaba).
- * Se reemplaza por "existsByFuncionIdAndAsientoIdAndEstado", que Spring
- * Data traduce automaticamente a:
- *   SELECT COUNT(*) > 0 FROM entrada
- *   WHERE funcion_id = ? AND asiento_id = ? AND estado = ?
- */
+/** DAO de Entrada. */
 @Repository
 public interface EntradaRepository extends JpaRepository<Entrada, Integer> {
 
-    boolean existsByFuncionIdAndAsientoIdAndEstado(Integer funcionId, Integer asientoId, EstadoEntrada estado);
+    /**
+     * Ids de las butacas con una entrada en el estado indicado para una funcion.
+     * Una sola consulta para toda la sala, en vez de una por butaca (evita N+1).
+     */
+    @Query("select e.asiento.id from Entrada e where e.ticketCompra.funcion.id = :funcionId and e.estado = :estado")
+    List<Integer> findAsientoIdsByFuncionIdAndEstado(Integer funcionId, EstadoEntrada estado);
 
-    List<Entrada> findByFuncionIdAndEstado(Integer funcionId, EstadoEntrada estado);
+    boolean existsByAsientoId(Integer asientoId);
 }

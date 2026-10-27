@@ -2,53 +2,54 @@ package com.example.GestionDeCine.model;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import jakarta.persistence.Table;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import jakarta.persistence.Column;
-import jakarta.validation.constraints.NotBlank;
+import lombok.Setter;
 
-
+/**
+ * Pelicula del catalogo. Mapea a la tabla "pelicula".
+ * Las validaciones de formato estan en PeliculaRequestDTO; la entidad solo
+ * describe como se guardan los datos.
+ */
 @Entity
-@Data
+@Table(name = "pelicula")
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Pelicula {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotBlank(message = "El nombre es obligatorio")
+    @Column(name = "nombre", nullable = false, length = 150)
     private String nombre;
 
-    @NotBlank(message = "El director es obligatorio")
+    @Column(name = "director", nullable = false, length = 100)
     private String director;
 
-    @NotNull(message = "La duracion es obligatoria")
-    @Positive(message = "La duracion (en minutos) debe ser mayor a 0")
+    /** Duracion en minutos; se usa para calcular la superposicion de funciones. */
+    @Column(name = "duracion", nullable = false)
     private Integer duracion;
 
-    @NotNull(message = "La fecha de estreno es obligatoria")
+    @Column(name = "fecha_estreno", nullable = false)
     private LocalDate fechaEstreno;
 
-    @NotBlank(message = "El idioma es obligatorio")
+    @Column(name = "idioma", nullable = false, length = 50)
     private String idioma;
 
-    @NotBlank(message = "El genero es obligatorio")
+    @Column(name = "genero", nullable = false, length = 50)
     private String genero;
 
-    @NotBlank(message = "La clasificacion por edad es obligatoria")
+    @Column(name = "clasificacion_edad", nullable = false, length = 20)
     private String clasificacionEdad;
 
-    @NotBlank(message = "La sinopsis es obligatoria")
-    @Column(nullable = false)
+    @Column(name = "sinopsis", nullable = false, length = 1000)
     private String sinopsis;
 }

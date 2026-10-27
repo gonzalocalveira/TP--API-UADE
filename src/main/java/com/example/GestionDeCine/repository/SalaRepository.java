@@ -5,7 +5,11 @@ import org.springframework.stereotype.Repository;
 
 import com.example.GestionDeCine.model.Sala;
 
-/** No existia en el diseño original; hacia falta para poder hacer CRUD de salas. */
+/** DAO de Sala. */
 @Repository
 public interface SalaRepository extends JpaRepository<Sala, Integer> {
+
+    boolean existsByNombreIgnoreCase(String nombre);
+
+    boolean existsByNombreIgnoreCaseAndIdNot(String nombre, Integer id);
 }

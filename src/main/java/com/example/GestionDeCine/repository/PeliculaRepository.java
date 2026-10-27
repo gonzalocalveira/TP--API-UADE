@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import com.example.GestionDeCine.model.Pelicula;
 
-/** No existia en el diseño original; hacia falta para poder hacer CRUD de peliculas. */
+/** DAO de Pelicula: el CRUD basico (save, findById, findAll, delete...) lo hereda de JpaRepository. */
 @Repository
 public interface PeliculaRepository extends JpaRepository<Pelicula, Integer> {
 }

@@ -1,39 +1,41 @@
 package com.example.GestionDeCine.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import jakarta.persistence.Table;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-
+/** Programa de socios: un usuario tiene como maximo una membresia (1 a 1). */
 @Entity
-@Data
+@Table(name = "membresia")
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Membresia {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotNull(message = "La membresia debe estar asociada a un usuario")
-    @OneToOne
-    @JoinColumn(name = "usuario_id", unique = true, nullable = false)
+    // unique = true en la FK es lo que hace que la relacion sea 1 a 1 en la base.
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "usuario_id", nullable = false, unique = true)
     private Usuario usuario;
 
-    @PositiveOrZero(message = "Los puntos no pueden ser negativos")
+    @Column(name = "puntos", nullable = false)
     private int puntos;
 
-    @NotNull(message = "El tipo de membresia es obligatorio")
     @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_membresia", nullable = false)
     private TipoMembresia tipoMembresia;
 }
