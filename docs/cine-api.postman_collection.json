@@ -727,7 +727,7 @@
     },
     {
       "name": "Asientos",
-      "description": "Sala 1 tiene las butacas 1 a 40 (A1..E8); Sala 2, las 41 a 70 (A1..C10). Sala 2 esta llena (30 de 30): para probar 'Crear', primero subile la capacidad o usa una sala nueva.",
+      "description": "Sala 1 tiene las butacas 1 a 40 (A1..E8); Sala 2, las 41 a 70 (A1..C10). Sala 2 tiene capacidad 40 con 30 butacas cargadas, asi que 'Crear' agrega la butaca 71.",
       "item": [
         {
           "name": "Listar",

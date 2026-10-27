@@ -24,7 +24,7 @@ INSERT INTO pelicula (nombre, director, duracion, fecha_estreno, idioma, genero,
 -- Salas ------------------------------------------------------------------------
 INSERT INTO sala (nombre, capacidad) VALUES
 ('Sala 1', 40),
-('Sala 2', 30);
+('Sala 2', 40);  -- capacidad 40 con 30 butacas cargadas: deja lugar para probar el alta de butacas
 
 -- Butacas ----------------------------------------------------------------------
 -- Se generan con un producto cartesiano (CROSS JOIN) entre una lista de filas y
