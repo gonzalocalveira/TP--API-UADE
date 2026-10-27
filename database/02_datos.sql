@@ -29,21 +29,23 @@ INSERT INTO sala (nombre, capacidad) VALUES
 -- Butacas ----------------------------------------------------------------------
 -- Se generan con un producto cartesiano (CROSS JOIN) entre una lista de filas y
 -- una lista de numeros, en vez de escribir 70 INSERTs a mano.
--- Sala 1: filas A-E x numeros 1-8 = 40 butacas.
-INSERT INTO asiento (fila_asiento, numero_asiento, sala_id)
-SELECT f.fila, n.numero, 1
-FROM (SELECT 'A' AS fila UNION ALL SELECT 'B' UNION ALL SELECT 'C' UNION ALL SELECT 'D' UNION ALL SELECT 'E') f
+-- El id se calcula a mano (posicion de la fila x butacas por fila + numero) porque
+-- en un INSERT ... SELECT MySQL reserva los AUTO_INCREMENT en bloques y deja
+-- huecos; asi los ids quedan seguidos y la demo es predecible.
+-- Sala 1: filas A-E x numeros 1-8 = 40 butacas -> ids 1 a 40 (A1 = 1, A2 = 2, ..., E8 = 40).
+INSERT INTO asiento (id, fila_asiento, numero_asiento, sala_id)
+SELECT (f.orden - 1) * 8 + n.numero, f.fila, n.numero, 1
+FROM (SELECT 'A' AS fila, 1 AS orden UNION ALL SELECT 'B', 2 UNION ALL SELECT 'C', 3
+      UNION ALL SELECT 'D', 4 UNION ALL SELECT 'E', 5) f
 CROSS JOIN (SELECT 1 AS numero UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4
-            UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8) n
-ORDER BY f.fila, n.numero;
+            UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8) n;
 
--- Sala 2: filas A-C x numeros 1-10 = 30 butacas.
-INSERT INTO asiento (fila_asiento, numero_asiento, sala_id)
-SELECT f.fila, n.numero, 2
-FROM (SELECT 'A' AS fila UNION ALL SELECT 'B' UNION ALL SELECT 'C') f
+-- Sala 2: filas A-C x numeros 1-10 = 30 butacas -> ids 41 a 70 (A1 = 41, ..., C10 = 70).
+INSERT INTO asiento (id, fila_asiento, numero_asiento, sala_id)
+SELECT 40 + (f.orden - 1) * 10 + n.numero, f.fila, n.numero, 2
+FROM (SELECT 'A' AS fila, 1 AS orden UNION ALL SELECT 'B', 2 UNION ALL SELECT 'C', 3) f
 CROSS JOIN (SELECT 1 AS numero UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5
-            UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10) n
-ORDER BY f.fila, n.numero;
+            UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10) n;
 
 -- Funciones ----------------------------------------------------------------------
 -- Ninguna se superpone con otra de la misma sala (se tuvo en cuenta la duracion).
