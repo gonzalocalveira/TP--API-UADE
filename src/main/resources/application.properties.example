@@ -1,0 +1,17 @@
+# Variables de entorno que lee application.properties (valor por defecto entre parentesis).
+# No hace falta copiar este archivo: es una referencia. Se setean en el sistema operativo,
+# en la configuracion de ejecucion del IDE o en la terminal antes de ./mvnw spring-boot:run.
+#
+# PORT                  Puerto HTTP del servidor                      (8080)
+# DB_HOST               Host de MySQL                                 (localhost)
+# DB_PORT               Puerto de MySQL                               (3306)
+# DB_NAME               Nombre de la base                             (gestioncine)
+# DB_USERNAME           Usuario de MySQL                              (root)
+# DB_PASSWORD           Password de MySQL                             (vacia)
+# SHOW_SQL              Mostrar en consola el SQL que genera Hibernate (true)
+# CORS_ALLOWED_ORIGINS  URLs del front separadas por coma             (http://localhost:5173,http://localhost:3000,http://127.0.0.1:5500)
+#
+# Ejemplo (PowerShell):
+#   $env:DB_PASSWORD = "miPassword"; ./mvnw spring-boot:run
+# Ejemplo (bash):
+#   DB_PASSWORD=miPassword DB_HOST=192.168.0.20 ./mvnw spring-boot:run

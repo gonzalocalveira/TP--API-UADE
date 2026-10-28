@@ -2,27 +2,24 @@ package com.example.GestionDeCine.service.interfaces;
 
 import java.util.List;
 
-import com.example.GestionDeCine.model.Usuario;
+import com.example.GestionDeCine.dto.UsuarioRequestDTO;
+import com.example.GestionDeCine.dto.UsuarioResponseDTO;
 
-/**
- * Contrato de la logica de negocio relacionada a Usuario. Separar la
- * interfaz de la implementacion (UsuarioService) permite, por ejemplo,
- * reemplazar la implementacion en tests (mocks) sin tocar los Controllers,
- * que solo dependen de esta interfaz.
- */
+/** Contrato de la logica de negocio de usuarios. */
 public interface IUsuarioService {
 
-    List<Usuario> obtenerUsuarios();
+    List<UsuarioResponseDTO> obtenerUsuarios();
 
-    Usuario obtenerUsuarioPorId(Integer id);
+    UsuarioResponseDTO obtenerUsuarioPorId(Integer id);
 
-    Usuario iniciarSesion(String mail, String password);
+    /** Devuelve el usuario si mail y password coinciden; si no, 401. */
+    UsuarioResponseDTO iniciarSesion(String mail, String password);
 
-    boolean tienePermiso(Usuario usuario, String operacion);
+    /** Registra siempre un CLIENTE no socio. Falla con 409 si el mail o el DNI ya existen. */
+    UsuarioResponseDTO crearUsuario(UsuarioRequestDTO dto);
 
-    Usuario crearUsuario(Usuario usuario);
+    UsuarioResponseDTO modificarUsuario(Integer id, UsuarioRequestDTO dto);
 
-    Usuario modificarUsuario(Integer id, Usuario usuario);
-
+    /** Falla con 409 si el usuario tiene compras. */
     void eliminarUsuario(Integer id);
 }

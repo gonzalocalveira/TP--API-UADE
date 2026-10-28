@@ -9,49 +9,31 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.GestionDeCine.exception.BusinessException;
-import com.example.GestionDeCine.exception.ResourceNotFoundException;
-import com.example.GestionDeCine.model.Membresia;
-import com.example.GestionDeCine.repository.MembresiaRepository;
-import com.example.GestionDeCine.repository.UsuarioRepository;
+import com.example.GestionDeCine.dto.MembresiaRequestDTO;
+import com.example.GestionDeCine.dto.MembresiaResponseDTO;
+import com.example.GestionDeCine.service.interfaces.IMembresiaService;
 
 import jakarta.validation.Valid;
 
-
+/** Endpoints REST de membresias. Delega toda la logica en IMembresiaService. */
 @RestController
 @RequestMapping("/api/membresias")
 public class MembresiaController {
 
-    private final MembresiaRepository membresiaRepository;
-    private final UsuarioRepository usuarioRepository;
+    private final IMembresiaService membresiaService;
 
-    public MembresiaController(MembresiaRepository membresiaRepository, UsuarioRepository usuarioRepository) {
-        this.membresiaRepository = membresiaRepository;
-        this.usuarioRepository = usuarioRepository;
+    public MembresiaController(IMembresiaService membresiaService) {
+        this.membresiaService = membresiaService;
     }
 
     @PostMapping
-    public ResponseEntity<Membresia> crearMembresia(@Valid @RequestBody Membresia membresia) {
-        Integer usuarioId = membresia.getUsuario().getId();
-
-        var usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id " + usuarioId));
-
-        if (membresiaRepository.existsByUsuarioId(usuarioId)) {
-            throw new BusinessException("El usuario " + usuarioId + " ya tiene una membresia");
-        }
-
-        membresia.setUsuario(usuario);
-        Membresia creada = membresiaRepository.save(membresia);
-        return ResponseEntity.status(HttpStatus.CREATED).body(creada);
+    public ResponseEntity<MembresiaResponseDTO> crearMembresia(@Valid @RequestBody MembresiaRequestDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(membresiaService.crearMembresia(dto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarMembresia(@PathVariable Integer id) {
-        if (!membresiaRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Membresia no encontrada con id " + id);
-        }
-        membresiaRepository.deleteById(id);
+        membresiaService.eliminarMembresia(id);
         return ResponseEntity.noContent().build();
     }
 }

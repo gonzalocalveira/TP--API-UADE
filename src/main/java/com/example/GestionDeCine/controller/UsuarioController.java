@@ -14,13 +14,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.GestionDeCine.dto.LoginRequestDTO;
+import com.example.GestionDeCine.dto.UsuarioRequestDTO;
 import com.example.GestionDeCine.dto.UsuarioResponseDTO;
-import com.example.GestionDeCine.model.Usuario;
 import com.example.GestionDeCine.service.interfaces.IUsuarioService;
 
 import jakarta.validation.Valid;
 
-
+/**
+ * Endpoints REST de usuarios y login. Nunca devuelve la password: todas las
+ * respuestas usan UsuarioResponseDTO.
+ */
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
@@ -33,27 +36,22 @@ public class UsuarioController {
 
     @GetMapping
     public ResponseEntity<List<UsuarioResponseDTO>> obtenerUsuarios() {
-        List<UsuarioResponseDTO> usuarios = usuarioService.obtenerUsuarios().stream()
-                .map(this::toResponseDTO)
-                .toList();
-        return ResponseEntity.ok(usuarios);
+        return ResponseEntity.ok(usuarioService.obtenerUsuarios());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> obtenerUsuarioPorId(@PathVariable Integer id) {
-        return ResponseEntity.ok(toResponseDTO(usuarioService.obtenerUsuarioPorId(id)));
+        return ResponseEntity.ok(usuarioService.obtenerUsuarioPorId(id));
     }
 
     @PostMapping
-    public ResponseEntity<UsuarioResponseDTO> crearUsuario(@Valid @RequestBody Usuario usuario) {
-        Usuario creado = usuarioService.crearUsuario(usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(toResponseDTO(creado));
+    public ResponseEntity<UsuarioResponseDTO> crearUsuario(@Valid @RequestBody UsuarioRequestDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.crearUsuario(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UsuarioResponseDTO> modificarUsuario(@PathVariable Integer id,
-                                                                 @Valid @RequestBody Usuario usuario) {
-        return ResponseEntity.ok(toResponseDTO(usuarioService.modificarUsuario(id, usuario)));
+    public ResponseEntity<UsuarioResponseDTO> modificarUsuario(@PathVariable Integer id, @Valid @RequestBody UsuarioRequestDTO dto) {
+        return ResponseEntity.ok(usuarioService.modificarUsuario(id, dto));
     }
 
     @DeleteMapping("/{id}")
@@ -63,20 +61,7 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UsuarioResponseDTO> login(@Valid @RequestBody LoginRequestDTO loginRequest) {
-        Usuario usuario = usuarioService.iniciarSesion(loginRequest.getMail(), loginRequest.getPassword());
-        return ResponseEntity.ok(toResponseDTO(usuario));
-    }
-
-    private UsuarioResponseDTO toResponseDTO(Usuario usuario) {
-        return new UsuarioResponseDTO(
-                usuario.getId(),
-                usuario.getNombreApellido(),
-                usuario.getDni(),
-                usuario.getFechaNacimiento(),
-                usuario.getMail(),
-                usuario.isSocio(),
-                usuario.getRol()
-        );
+    public ResponseEntity<UsuarioResponseDTO> login(@Valid @RequestBody LoginRequestDTO dto) {
+        return ResponseEntity.ok(usuarioService.iniciarSesion(dto.getMail(), dto.getPassword()));
     }
 }

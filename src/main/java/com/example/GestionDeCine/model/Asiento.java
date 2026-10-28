@@ -1,6 +1,8 @@
 package com.example.GestionDeCine.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -8,35 +10,32 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-
+/** Butaca fisica dentro de una sala (fila + numero). Mapea a la tabla "asiento". */
 @Entity
-
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "sala_id", "fila_asiento", "numero_asiento" }))
-@Data
+@Table(name = "asiento",
+        uniqueConstraints = @UniqueConstraint(name = "uk_asiento_ubicacion",
+                columnNames = { "sala_id", "fila_asiento", "numero_asiento" }))
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Asiento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotNull(message = "El numero de asiento es obligatorio")
-    @Positive(message = "El numero de asiento debe ser mayor a 0")
+    @Column(name = "numero_asiento", nullable = false)
     private Integer numeroAsiento;
 
-    @NotBlank(message = "La fila es obligatoria")
+    @Column(name = "fila_asiento", nullable = false, length = 5)
     private String filaAsiento;
 
-    @NotNull(message = "El asiento debe pertenecer a una sala")
-    @ManyToOne
+    // Muchos asientos pertenecen a una sala. LAZY: la sala se carga solo si se usa.
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "sala_id", nullable = false)
     private Sala sala;
 }

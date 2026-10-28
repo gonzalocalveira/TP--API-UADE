@@ -13,12 +13,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.GestionDeCine.model.Pelicula;
+import com.example.GestionDeCine.dto.PeliculaRequestDTO;
+import com.example.GestionDeCine.dto.PeliculaResponseDTO;
 import com.example.GestionDeCine.service.interfaces.IPeliculaService;
 
 import jakarta.validation.Valid;
 
-
+/**
+ * Endpoints REST del catalogo de peliculas.
+ * Capa de comunicacion: recibe el request, valida el body con @Valid, delega en
+ * el service y arma la respuesta HTTP. No contiene reglas de negocio.
+ */
 @RestController
 @RequestMapping("/api/peliculas")
 public class PeliculaController {
@@ -30,23 +35,23 @@ public class PeliculaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Pelicula>> obtenerPeliculas() {
+    public ResponseEntity<List<PeliculaResponseDTO>> obtenerPeliculas() {
         return ResponseEntity.ok(peliculaService.obtenerPeliculas());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Pelicula> obtenerPeliculaPorId(@PathVariable Integer id) {
+    public ResponseEntity<PeliculaResponseDTO> obtenerPeliculaPorId(@PathVariable Integer id) {
         return ResponseEntity.ok(peliculaService.obtenerPeliculaPorId(id));
     }
 
     @PostMapping
-    public ResponseEntity<Pelicula> crearPelicula(@Valid @RequestBody Pelicula pelicula) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(peliculaService.crearPelicula(pelicula));
+    public ResponseEntity<PeliculaResponseDTO> crearPelicula(@Valid @RequestBody PeliculaRequestDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(peliculaService.crearPelicula(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Pelicula> modificarPelicula(@PathVariable Integer id, @Valid @RequestBody Pelicula pelicula) {
-        return ResponseEntity.ok(peliculaService.modificarPelicula(id, pelicula));
+    public ResponseEntity<PeliculaResponseDTO> modificarPelicula(@PathVariable Integer id, @Valid @RequestBody PeliculaRequestDTO dto) {
+        return ResponseEntity.ok(peliculaService.modificarPelicula(id, dto));
     }
 
     @DeleteMapping("/{id}")

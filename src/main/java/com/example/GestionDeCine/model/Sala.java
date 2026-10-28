@@ -1,35 +1,31 @@
 package com.example.GestionDeCine.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import jakarta.persistence.Table;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-
-
-
-
-
+/** Sala fisica del cine. Mapea a la tabla "sala". */
 @Entity
-@Data
+@Table(name = "sala")
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Sala {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotBlank(message = "El nombre de la sala es obligatorio")
+    @Column(name = "nombre", nullable = false, unique = true, length = 50)
     private String nombre;
 
-    @NotNull(message = "La capacidad es obligatoria")
-    @Positive(message = "La capacidad debe ser mayor a 0")
+    /** Cantidad maxima de butacas que se pueden cargar en la sala. */
+    @Column(name = "capacidad", nullable = false)
     private Integer capacidad;
 }

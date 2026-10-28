@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,14 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.GestionDeCine.dto.CompraRequestDTO;
-import com.example.GestionDeCine.model.Membresia;
-import com.example.GestionDeCine.model.Pelicula;
-import com.example.GestionDeCine.model.TicketCompra;
+import com.example.GestionDeCine.dto.MembresiaResponseDTO;
+import com.example.GestionDeCine.dto.PeliculaResponseDTO;
+import com.example.GestionDeCine.dto.TicketCompraResponseDTO;
 import com.example.GestionDeCine.service.interfaces.IClienteService;
 
 import jakarta.validation.Valid;
 
-
+/** Endpoints del "e-commerce": cartelera, compra y cancelacion de entradas, historial y membresia. */
 @RestController
 @RequestMapping("/api/clientes")
 public class ClienteController {
@@ -31,26 +32,28 @@ public class ClienteController {
     }
 
     @GetMapping("/cartelera")
-    public ResponseEntity<List<Pelicula>> verCartelera() {
+    public ResponseEntity<List<PeliculaResponseDTO>> verCartelera() {
         return ResponseEntity.ok(clienteService.verCartelera());
     }
 
     @PostMapping("/compras")
-    public ResponseEntity<TicketCompra> comprarEntrada(@Valid @RequestBody CompraRequestDTO compraRequest) {
-        TicketCompra ticket = clienteService.comprarEntrada(
-                compraRequest.getUsuarioId(),
-                compraRequest.getFuncionId(),
-                compraRequest.getAsientoId());
-        return ResponseEntity.status(HttpStatus.CREATED).body(ticket);
+    public ResponseEntity<TicketCompraResponseDTO> comprarEntradas(@Valid @RequestBody CompraRequestDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(clienteService.comprarEntradas(dto));
+    }
+
+    /** PATCH porque modifica solo una parte del recurso (su estado), no lo reemplaza entero. */
+    @PatchMapping("/compras/{id}/cancelar")
+    public ResponseEntity<TicketCompraResponseDTO> cancelarCompra(@PathVariable Integer id) {
+        return ResponseEntity.ok(clienteService.cancelarCompra(id));
     }
 
     @GetMapping("/{usuarioId}/historial")
-    public ResponseEntity<List<TicketCompra>> verHistorial(@PathVariable Integer usuarioId) {
+    public ResponseEntity<List<TicketCompraResponseDTO>> verHistorial(@PathVariable Integer usuarioId) {
         return ResponseEntity.ok(clienteService.verHistorial(usuarioId));
     }
 
     @GetMapping("/{usuarioId}/membresia")
-    public ResponseEntity<Membresia> verMembresia(@PathVariable Integer usuarioId) {
+    public ResponseEntity<MembresiaResponseDTO> verMembresia(@PathVariable Integer usuarioId) {
         return ResponseEntity.ok(clienteService.verMembresia(usuarioId));
     }
 }
