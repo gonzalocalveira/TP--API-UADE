@@ -42,7 +42,7 @@ public class Usuario {
     @Column(name = "mail", nullable = false, unique = true, length = 100)
     private String mail;
 
-    // shortcut: password en texto plano porque la Etapa 1 no incluye Spring Security; con seguridad se guardaria un hash BCrypt.
+    // Se guarda en texto plano porque la Etapa 1 no incluye Spring Security; con seguridad se guardaria un hash BCrypt.
     @Column(name = "password", nullable = false, length = 100)
     private String password;
 

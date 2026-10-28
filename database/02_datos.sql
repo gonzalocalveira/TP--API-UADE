@@ -58,7 +58,8 @@ INSERT INTO funcion (fecha_funcion, hora_funcion, formato_funcion, precio, pelic
 (DATE_ADD(CURDATE(), INTERVAL 3 DAY), '15:00:00', 'DOS_D',     4000.00, 2, 2);  -- 6: Toy Story 3, Sala 2
 
 -- Usuarios ---------------------------------------------------------------------
--- shortcut: passwords en texto plano (la Etapa 1 no incluye Spring Security).
+-- Las passwords van en texto plano porque la Etapa 1 no incluye Spring Security;
+-- con seguridad se guardaria un hash BCrypt.
 INSERT INTO usuarios (nombre_apellido, dni, fecha_nacimiento, mail, password, is_socio, rol) VALUES
 ('Ana Gomez',         30111222, '1990-04-12', 'ana@mail.com',   'ana1234',   b'1', 'CLIENTE'),        -- 1
 ('Bruno Diaz',        35222333, '1995-09-30', 'bruno@mail.com', 'bruno1234', b'0', 'CLIENTE'),        -- 2
